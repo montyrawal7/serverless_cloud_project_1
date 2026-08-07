@@ -1,4 +1,3 @@
-# serverless_cloud_project_1
 ## Serverless AWS Guestbook
 
 A simple serverless guestbook application built entirely on AWS managed services. Visitors can leave their name and a message, and see previous entries displayed on the page. No servers to manage — everything scales automatically and costs close to nothing at low traffic.
