@@ -1,21 +1,21 @@
 # serverless_cloud_project_1
-Serverless AWS Guestbook
+## Serverless AWS Guestbook
 
 A simple serverless guestbook application built entirely on AWS managed services. Visitors can leave their name and a message, and see previous entries displayed on the page. No servers to manage — everything scales automatically and costs close to nothing at low traffic.
 
-Architecture
+## Architecture
 
 The frontend is a static HTML, CSS, and JavaScript page hosted on Amazon S3 with static website hosting enabled. The frontend calls an API built with Amazon API Gateway, which has two routes. A POST route to slash submit accepts new guestbook entries and triggers an AWS Lambda function that writes the name and message into an Amazon DynamoDB table. A GET route to slash messages triggers a second Lambda function that scans the DynamoDB table and returns all entries as JSON, which the frontend then renders on the page.
 
-Tech stack
+## Tech stack
 
 Amazon S3 for static website hosting. Amazon API Gateway for the REST API. AWS Lambda, running Node.js or Python, for the backend logic. Amazon DynamoDB as the database, chosen because it requires no schema and scales automatically. AWS IAM for permissions between these services.
 
-Repository structure
+## Repository structure
 
 At the root there's an index HTML file, a styles CSS file, and a script JS file for the frontend. There's also a backend folder containing two Lambda function files, one named submit handler and one named get messages handler.
 
-Setup and deployment
+## Setup and deployment
 
 First, create the DynamoDB table. Name it guestbook and set the partition key to id, of type string.
 
@@ -29,18 +29,18 @@ Fifth, update the frontend. In script JS, set the API base URL to your API Gatew
 
 Sixth, deploy the frontend. Create an S3 bucket, enable static website hosting, upload the three frontend files, and attach a bucket policy allowing public read access to the objects.
 
-Testing
+## Testing
 
 You can test the backend directly without the frontend using curl. A post request with a JSON body containing name and message fields sent to your slash submit endpoint should return a success response, and a get request to slash messages should return the entries you've submitted as JSON.
 
-Security notes
+## Security notes
 
 Sanitize and escape any user-submitted name or message text before rendering it on the page, to avoid stored cross site scripting. Keep IAM permissions scoped to only the specific actions and table each function needs.
 
-Cleanup
+## Cleanup
 
 To avoid ongoing charges, delete the API Gateway API, both Lambda functions, the DynamoDB table, and empty and delete the S3 bucket when you're done with the project.
 
-License
+## License
 
 MIT License.
