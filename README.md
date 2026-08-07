@@ -2,9 +2,18 @@
 
 A simple serverless guestbook application built entirely on AWS managed services. Visitors can leave their name and a message, and see previous entries displayed on the page. No servers to manage — everything scales automatically and costs close to nothing at low traffic.
 
+## Live Demo
+
+http://montyrawal7-guestbook.s3-website-us-east-1.amazonaws.com
+
 ## Architecture
 
-The frontend is a static HTML, CSS, and JavaScript page hosted on Amazon S3 with static website hosting enabled. The frontend calls an API built with Amazon API Gateway, which has two routes. A POST route to slash submit accepts new guestbook entries and triggers an AWS Lambda function that writes the name and message into an Amazon DynamoDB table. A GET route to slash messages triggers a second Lambda function that scans the DynamoDB table and returns all entries as JSON, which the frontend then renders on the page.
+The frontend is a static HTML, CSS, and JavaScript page hosted on Amazon S3 with static website hosting enabled. It calls an API built with Amazon API Gateway (HTTP API), which has two routes:
+
+POST /submit → triggers a Lambda function that validates the input and writes a new entry to DynamoDB
+GET /messages → triggers a second Lambda function that scans the DynamoDB table and returns all entries as JSON
+
+The frontend fetches /messages on page load to render existing entries, and calls /submit when the form is submitted, then refreshes the list.
 
 ![Architecture Diagram](https://github.com/montyrawal7/serverless_cloud_project_1/blob/main/Project_Diagram.png?raw=true)
 
@@ -14,34 +23,35 @@ Amazon S3 for static website hosting. Amazon API Gateway for the REST API. AWS L
 
 ## Repository structure
 
-At the root there's an index HTML file, a styles CSS file, and a script JS file for the frontend. There's also a backend folder containing two Lambda function files, one named submit handler and one named get messages handler.
+serverless_cloud_project_1/
+├── README.md
+├── Project_Diagram.png
+├── frontend/
+│   ├── index.html
+│   ├── styles.css
+│   └── script.js
+└── backend/
+    ├── submit_handler.py
+    ├── get_messages_handler.py
+    ├── submit_handler_policy.json
+    ├── get_messages_handler_policy.json
+    └── bucket_policy.json
 
 ## Setup and deployment
 
-First, create the DynamoDB table. Name it guestbook and set the partition key to id, of type string.
+DynamoDB — Create a table named guestbook with partition key id (String), on-demand capacity mode.
+Lambda — Create two Python 3.12 functions: submitHandler (using submit_handler.py) and getMessagesHandler (using get_messages_handler.py). Add an environment variable TABLE_NAME=guestbook to both.
+IAM — Attach an inline policy to submitHandler's execution role granting dynamodb:PutItem scoped to the table's ARN. Attach a separate policy to getMessagesHandler's role granting dynamodb:Scan, also scoped to the table's ARN. See the policy JSON files in /backend.
+API Gateway — Create an HTTP API. Add a POST /submit route integrated with submitHandler, and a GET /messages route integrated with getMessagesHandler. Enable CORS: allow origins *, methods GET, POST, OPTIONS, headers Content-Type.
+Frontend — In script.js, set API_BASE_URL to your API Gateway invoke URL.
+S3 — Create a bucket, enable static website hosting (index document: index.html), attach a public-read bucket policy (see bucket_policy.json), and upload the three frontend files.
 
-Second, create the two Lambda functions. Create one function named submit handler using the code from the backend folder, and give it an environment variable called TABLE underscore NAME set to guestbook. Then create a second function named get messages handler the same way, with the same environment variable.
+## Security Notes
 
-Third, attach IAM permissions. Each Lambda needs an execution role. The submit handler needs DynamoDB put item permission on the guestbook table. The get messages handler needs DynamoDB scan permission on the same table. Keep these permissions scoped only to that one table's resource, not to all of DynamoDB.
+Each Lambda's IAM role is scoped to only the single DynamoDB action it needs (PutItem or Scan) on only the guestbook table's ARN — no broader DynamoDB or account access.
+All user-submitted text (name, message) is escaped client-side before being rendered, to prevent stored XSS from malicious guestbook entries.
+Input is trimmed and length-capped server-side in both Lambda functions.
 
-Fourth, create the API Gateway. Set up a REST or HTTP API with a POST route at slash submit connected to the submit handler Lambda, and a GET route at slash messages connected to the get messages handler Lambda. Enable CORS on both routes since the frontend will call this API from a different origin.
+## Cost
 
-Fifth, update the frontend. In script JS, set the API base URL to your API Gateway invoke URL. On page load, the script should call the messages endpoint and render the results. On form submission, it should call the submit endpoint and then refresh the list.
-
-Sixth, deploy the frontend. Create an S3 bucket, enable static website hosting, upload the three frontend files, and attach a bucket policy allowing public read access to the objects.
-
-## Testing
-
-You can test the backend directly without the frontend using curl. A post request with a JSON body containing name and message fields sent to your slash submit endpoint should return a success response, and a get request to slash messages should return the entries you've submitted as JSON.
-
-## Security notes
-
-Sanitize and escape any user-submitted name or message text before rendering it on the page, to avoid stored cross site scripting. Keep IAM permissions scoped to only the specific actions and table each function needs.
-
-## Cleanup
-
-To avoid ongoing charges, delete the API Gateway API, both Lambda functions, the DynamoDB table, and empty and delete the S3 bucket when you're done with the project.
-
-## License
-
-MIT License.
+Built entirely on pay-per-use services (S3, Lambda, API Gateway, DynamoDB on-demand), so cost scales with traffic and is effectively $0 at rest. All four services fall within AWS free-tier limits for a low-traffic demo project.
