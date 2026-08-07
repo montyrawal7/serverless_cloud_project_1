@@ -19,7 +19,15 @@ The frontend fetches /messages on page load to render existing entries, and call
 
 ## Tech stack
 
-Amazon S3 for static website hosting. Amazon API Gateway for the REST API. AWS Lambda, running Node.js or Python, for the backend logic. Amazon DynamoDB as the database, chosen because it requires no schema and scales automatically. AWS IAM for permissions between these services.
+Amazon S3 for static website hosting. 
+
+Amazon API Gateway for the REST API. 
+
+AWS Lambda, running Node.js or Python, for the backend logic. 
+
+Amazon DynamoDB as the database, chosen because it requires no schema and scales automatically. 
+
+AWS IAM for permissions between these services.
 
 ## Repository structure
 
@@ -39,12 +47,17 @@ serverless_cloud_project_1/
 
 ## Setup and deployment
 
-DynamoDB — Create a table named guestbook with partition key id (String), on-demand capacity mode.
-Lambda — Create two Python 3.12 functions: submitHandler (using submit_handler.py) and getMessagesHandler (using get_messages_handler.py). Add an environment variable TABLE_NAME=guestbook to both.
-IAM — Attach an inline policy to submitHandler's execution role granting dynamodb:PutItem scoped to the table's ARN. Attach a separate policy to getMessagesHandler's role granting dynamodb:Scan, also scoped to the table's ARN. See the policy JSON files in /backend.
-API Gateway — Create an HTTP API. Add a POST /submit route integrated with submitHandler, and a GET /messages route integrated with getMessagesHandler. Enable CORS: allow origins *, methods GET, POST, OPTIONS, headers Content-Type.
+DynamoDB — Created a table named guestbook with partition key id (String), on-demand capacity mode.
+
+Lambda — Created two Python 3.12 functions: submitHandler (using submit_handler.py) and getMessagesHandler (using get_messages_handler.py). Added an environment variable TABLE_NAME=guestbook to both.
+
+IAM — Attached an inline policy to submitHandler's execution role granting dynamodb:PutItem scoped to the table's ARN. Attached a separate policy to getMessagesHandler's role granting dynamodb:Scan, also scoped to the table's ARN. See the policy JSON files in /backend.
+
+API Gateway — Created an HTTP API. Added a POST /submit route integrated with submitHandler, and a GET /messages route integrated with getMessagesHandler. Enabled CORS: allow origins *, methods GET, POST, OPTIONS, headers Content-Type.
+
 Frontend — In script.js, set API_BASE_URL to your API Gateway invoke URL.
-S3 — Create a bucket, enable static website hosting (index document: index.html), attach a public-read bucket policy (see bucket_policy.json), and upload the three frontend files.
+
+S3 — Created a bucket, enabled static website hosting (index document: index.html), attached a public-read bucket policy (see bucket_policy.json), and uploaded the three frontend files.
 
 ## Security Notes
 
