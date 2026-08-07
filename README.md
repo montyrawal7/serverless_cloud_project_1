@@ -5,6 +5,7 @@ A simple serverless guestbook application built entirely on AWS managed services
 ## Architecture
 
 The frontend is a static HTML, CSS, and JavaScript page hosted on Amazon S3 with static website hosting enabled. The frontend calls an API built with Amazon API Gateway, which has two routes. A POST route to slash submit accepts new guestbook entries and triggers an AWS Lambda function that writes the name and message into an Amazon DynamoDB table. A GET route to slash messages triggers a second Lambda function that scans the DynamoDB table and returns all entries as JSON, which the frontend then renders on the page.
+![Architecture Diagram]https://github.com/montyrawal7/serverless_cloud_project_1/blob/main/Project_Diagram.png
 
 ## Tech stack
 
