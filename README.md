@@ -30,7 +30,7 @@ Amazon DynamoDB as the database, chosen because it requires no schema and scales
 AWS IAM for permissions between these services.
 
 ## Repository structure
-
+```
 serverless_cloud_project_1/
 ├── README.md
 ├── Project_Diagram.png
@@ -44,7 +44,7 @@ serverless_cloud_project_1/
     ├── submit_handler_policy.json
     ├── get_messages_handler_policy.json
     └── bucket_policy.json
-
+```
 ## Setup and deployment
 
 DynamoDB — Created a table named guestbook with partition key id (String), on-demand capacity mode.
