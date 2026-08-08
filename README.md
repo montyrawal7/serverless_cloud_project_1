@@ -55,7 +55,7 @@ IAM — Attached an inline policy to submitHandler's execution role granting dyn
 
 API Gateway — Created an HTTP API. Added a POST /submit route integrated with submitHandler, and a GET /messages route integrated with getMessagesHandler. Enabled CORS: allow origins *, methods GET, POST, OPTIONS, headers Content-Type.
 
-Frontend — In script.js, set API_BASE_URL to your API Gateway invoke URL.
+Frontend — In script.js, set API_BASE_URL to the API Gateway invoke URL.
 
 S3 — Created a bucket, enabled static website hosting (index document: index.html), attached a public-read bucket policy (see bucket_policy.json), and uploaded the three frontend files.
 
